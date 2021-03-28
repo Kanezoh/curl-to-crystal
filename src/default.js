@@ -1,8 +1,8 @@
-import curlToRuby from "./curlToRuby";
+import curlToCrystal from "./curlToCrystal";
 import hljs from "./highlight.pack.js";
 
 function init() {
-  const emptyOutputMsg = "Ruby code will appear here";
+  const emptyOutputMsg = "Crystal code will appear here";
   const formattedEmptyOutputMsg = '<span style="color: #777;">'+emptyOutputMsg+'</span>';
 
   function getOutputHTML(input) {
@@ -11,7 +11,7 @@ function init() {
     }
 
     try {
-      const output = curlToRuby(input);
+      const output = curlToCrystal(input);
       if (output) {
 	const coloredOutput = hljs.highlight("ruby", output);
 	return coloredOutput.value;

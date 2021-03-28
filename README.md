@@ -1,7 +1,7 @@
-curl-to-ruby
+curl-to-crystal
 ============
 
-curl-to-ruby is a tool to instantly convert [curl](http://curl.haxx.se) commands to ruby code using [net/http](http://ruby-doc.org/stdlib-2.1.1/libdoc/net/http/rdoc/Net/HTTP.html) in the browser. It does *not* guarantee high-fidelity conversions, but it's good enough for most API docs that have curl samples.
+curl-to-crystal is a tool to instantly convert [curl](http://curl.haxx.se) commands to crystal code using [http/client](https://crystal-lang.org/api/1.0.0/HTTP.htm) in the browser. It does *not* guarantee high-fidelity conversions, but it's good enough for most API docs that have curl samples.
 
 ### Try it
 
@@ -12,7 +12,7 @@ curl-to-ruby is a tool to instantly convert [curl](http://curl.haxx.se) commands
 
 #### Does any curl command work?
 
-Any curl command should work, but only certain flags are understood and converted into ruby code. The rest of the flags will be ignored.
+Any curl command should work, but only certain flags are understood and converted into crystal code. The rest of the flags will be ignored.
 
 #### Which kinds of curl commands are understood?
 
@@ -25,6 +25,8 @@ curl has like a bajillion options, so don't expect all of them to be implemented
 
 
 ### Credits
+
+Updated to crystal by Shunya Kaneko ([Kanezoh](https://twitter.com/kanezoh_))
 
 Updated to ruby by John Hawthorn ([jhawthorn](https://twitter.com/jhawthorn))
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>curl-to-ruby: Convert curl commands to ruby's net/http</title>
+    <title>curl-to-crystal: Convert curl commands to crystal's http/client</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="resources/css/color-brewer.css">
     <link rel="stylesheet" href="resources/css/common.css">
@@ -9,18 +9,13 @@
   <body>
 
     <header>
-      <h1>curl-to-ruby</h1>
-      <h2>Instantly convert <a href="http://curl.haxx.se/">curl</a> commands to <a href="https://www.ruby-lang.org/">Ruby</a>'s <a href="http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html">net/http</a></h2>
-
+      <h1>curl-to-crystal</h1>
+      <h2>Instantly convert <a href="http://curl.haxx.se/">curl</a> commands to <a href="https://www.crystal-lang.org/">crystal</a>'s <a href="https://crystal-lang.org/api/1.0.0/HTTP.html">http/client</a></h2>
       <p>
-        Ruby's <code>net/http</code> is notorious for not having the friendliest API, but it isn't all that bad.
-        Ruby has great gems like <a href="https://github.com/lostisland/faraday">faraday</a>, but in libraries and small utilities it's better to <a href="http://www.mikeperham.com/2016/02/09/kill-your-dependencies/">kill your dependencies</a> and use what the stdlib provides.
+        This tool turns a curl command into crystal (1.0.0) code using <code>http/client</code>. Currently, it knows the following options: <code>-d</code>/<code>--data</code>, <code>-H</code>/<code>--header</code>, <code>-I</code>/<code>--head</code>, <code>-u</code>/<code>--user</code>, <code>-k</code>/<code>--insecure</code>, <code>--url</code>, and <code>-X</code>/<code>--request</code>.
       </p>
       <p>
-        This tool turns a curl command into ruby (2.0+) code using <code>net/http</code>. Currently, it knows the following options: <code>-d</code>/<code>--data</code>, <code>-H</code>/<code>--header</code>, <code>-I</code>/<code>--head</code>, <code>-u</code>/<code>--user</code>, <code>-k</code>/<code>--insecure</code>, <code>--url</code>, and <code>-X</code>/<code>--request</code>.
-      </p>
-      <p>
-        There's probably bugs; please <a href="https://github.com/jhawthorn/curl-to-ruby">contribute on GitHub</a>. Based on <a href="https://mholt.github.io/curl-to-go">curl-to-go</a>.
+        There's probably bugs; please <a href="https://github.com/Kanezoh/curl-to-crystal">contribute on GitHub</a>. Based on <a href="https://mholt.github.io/curl-to-go">curl-to-go</a>, and Forked from <a href="https://github.com/jhawthorn/curl-to-ruby">curl-to-ruby</a>
       </p>
 
       <p class="examples">

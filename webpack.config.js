@@ -6,7 +6,7 @@ var webpack = require('webpack');
 module.exports = {
   entry: {
     default: './src/default.js',
-    "curl-to-ruby": './src/curl-to-ruby.js'
+    "curl-to-crystal": './src/curl-to-crystal.js'
   },
 
   output: {

@@ -1,4 +1,4 @@
-export default function jsonToRuby(json, indent = "") {
+export default function jsonToCrystal(json, indent = "") {
 	let type = typeof(json);
 	if (json == null) {
 		return "nil";
@@ -12,7 +12,7 @@ export default function jsonToRuby(json, indent = "") {
 		let ret = "[\n";
 		json.forEach((element) => {
 			ret += indent + "  ";
-			ret += jsonToRuby(element, indent + "  ");
+			ret += jsonToCrystal(element, indent + "  ");
 			ret += ",\n";
 		});
 		ret = ret.slice(0, -2);
@@ -22,9 +22,9 @@ export default function jsonToRuby(json, indent = "") {
 		let ret = "{\n";
 		for (var key in json) {
 			ret += indent + "  ";
-			ret += jsonToRuby(key);
+			ret += jsonToCrystal(key);
 			ret += " => ";
-			ret += jsonToRuby(json[key], indent + "  ");
+			ret += jsonToCrystal(json[key], indent + "  ");
 			ret += ",\n";
 		}
 		ret = ret.slice(0, -2);

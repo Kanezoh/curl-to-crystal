@@ -1,21 +1,23 @@
 /*
-	curl-to-ruby
+	curl-to-crystal
 
-	A simple utility to convert curl commands into ruby code.
+	A simple utility to convert curl commands into crystal code.
+
+  Forked from curl-to-ruby by Hawthorn
+  https://github.com/jhawthorn/curl-to-ruby
 
 	Based on curl-to-go by Matt Holt
 	https://github.com/mholt/curl-to-go
 */
 
 import queryString from 'query-string';
-import jsonToRuby from './jsonToRuby';
 import parseCommand from "./parseCommand";
 
-export default function curlToRuby(curl) {
-	var prelude = "require 'net/http'\nrequire 'uri'\n";
+export default function curlToCrystal(curl) {
+	var prelude = "require \"http/client\"\nrequire \"uri\"\n";
 	var coda = "\n" +
-		"# response.code\n" +
-		"# response.body\n";
+		"# response.status_code.not_nil!\n" +
+		"# response.body.not_nil!\n";
 
 	// List of curl flags that are boolean typed; this helps with parsing
 	// a command like `curl -abc value` to know whether 'value' belongs to '-c'
@@ -38,33 +40,25 @@ export default function curlToRuby(curl) {
 		'h', 'help', 'M', 'manual', 'V', 'version'];
 
 	var httpMethods = {
-	 'COPY':      'Copy',
-	 'DELETE':    'Delete',
-	 'GET':       'Get',
-	 'HEAD':      'Head',
-	 'LOCK':      'Lock',
-	 'MKCOL':     'Mkcol',
-	 'MoVE':      'Move',
-	 'OPTIONS':   'Options',
-	 'PATCH':     'Patch',
-	 'POST':      'Post',
-	 'PROPFIND':  'Propfind',
-	 'PROPPATCH': 'Proppatch',
-	 'PUT':       'Put',
-	 'TRACE':     'Trace',
-	 'UNLOCK':    'Unlock'
+	 'DELETE':    'delete',
+	 'GET':       'get',
+	 'HEAD':      'head',
+	 'OPTIONS':   'options',
+	 'PATCH':     'patch',
+	 'POST':      'post',
+	 'PUT':       'put',
 	};
 
 	let formUrlEncodedRegex = /^([^\s]+=[^\s]+)(&[^\s]+=[^\s]+)*$/;
 
 	if (!curl.trim())
 		return;
-	var cmd = parseCommand(curl, { boolFlags: boolOptions });
+  var cmd = parseCommand(curl, { boolFlags: boolOptions });
 
 	if (cmd._[0] != "curl")
 		throw "Not a curl command";
 
-	var req = extractRelevantPieces(cmd);
+  var req = extractRelevantPieces(cmd);
 
 	if (isSimple(req)) {
 		return renderSimple(req);
@@ -75,15 +69,15 @@ export default function curlToRuby(curl) {
 
 	// renderSimple renders a simple HTTP request using net/http convenience methods
 	function renderSimple(req) {
-		var ruby = "";
+		var crystal = "";
+		crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
+    crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
+		crystal += 'response = client.get(uri.request_target)\n';
 
-		ruby += 'uri = URI.parse("' + rubyEsc(req.url) + '")\n';
-		ruby += 'response = Net::HTTP.get_response(uri)\n';
-
-		return prelude + "\n" + ruby + coda;
+		return prelude + "\n" + crystal + coda;
 	}
 
-	// renderComplex renders Go code that requires making a http.Request.
+	// renderComplex renders Crystal code that requires making a http.Request.
 	function renderComplex(req) {
 		// First, figure out the headers
 		var headers = {};
@@ -97,29 +91,19 @@ export default function curlToRuby(curl) {
 
 		delete headers["Accept-Encoding"];
 
-		var ruby = "";
-
-		ruby += 'uri = URI.parse("' + rubyEsc(req.url) + '")\n';
-
-		if (httpMethods[req.method]) {
-			ruby += 'request = Net::HTTP::'+httpMethods[req.method]+'.new(uri)\n';
-		} else {
-			ruby += 'request = Net::HTTPGenericRequest.new("' + rubyEsc(req.method) + '", false, false, uri)\n';
-		}
+    var crystal = "";
+    crystal += 'headers = HTTP::Headers.new\n'
+		crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
+    crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
 
 		// set basic auth
 		if (req.basicauth) {
-			ruby += 'request.basic_auth("'+rubyEsc(req.basicauth.user)+'", "'+rubyEsc(req.basicauth.pass)+'")\n';
-		}
-
-		if (headers["Content-Type"]) {
-			ruby += 'request.content_type = "' + rubyEsc(headers["Content-Type"]) + '"\n';
-			delete(headers["Content-Type"]);
+			crystal += 'client.basic_auth("'+crystalEsc(req.basicauth.user)+'", "'+crystalEsc(req.basicauth.pass)+'")\n';
 		}
 
 		// set headers
 		for (var name in headers) {
-			ruby += 'request["'+rubyEsc(name)+'"] = "'+rubyEsc(headers[name])+'"\n';
+			crystal += 'headers["'+crystalEsc(name)+'"] = "'+crystalEsc(headers[name])+'"\n';
 		}
 
 		function isJson(json) {
@@ -133,53 +117,56 @@ export default function curlToRuby(curl) {
 
 		if (req.data.ascii) {
 			if (isJson(req.data.ascii)) {
-				let json = JSON.parse(req.data.ascii);
-				prelude += "require 'json'\n";
-				ruby += "request.body = JSON.dump(" + jsonToRuby(json) + ")\n";
+        let json = JSON.parse(req.data.ascii);
+        crystal += "body = \"" + JSON.stringify(json).replace(/"/g, '\\"') + "\"\n";
+        var body = true;
 			} else if (formUrlEncodedRegex.test(req.data.ascii)) {
-				let formData = queryString.parse(req.data.ascii);
-				ruby += "request.set_form_data(\n";
-				for(var name in formData) {
-					let value = formData[name];
-					ruby += `  "${rubyEsc(name)}" => "${rubyEsc(value)}",\n`
-				}
-				ruby += ")\n";
+        crystal += 'form = "' + crystalEsc(req.data.ascii) + '"\n';
+        var form = true;
 			} else {
-				ruby += 'request.body = "' + rubyEsc(req.data.ascii) + '"\n';
+				crystal += 'body = "' + crystalEsc(req.data.ascii) + '"\n';
+        var body = true;
 			}
+    }
+
+		//if (req.data.files && req.data.files.length > 0) {
+		//	if (!req.data.ascii) {
+		//		ruby += 'request.body = ""\n';
+		//	}
+//
+		//	for (var i = 0; i < req.data.files.length; i++) {
+		//		ruby += 'request.body << File.read("'+rubyEsc(req.data.files[i])+'").delete("\\r\\n")\n';
+		//	}
+		//}
+
+		crystal += '\n'
+		//ruby += 'req_options = {\n'
+		//ruby += '  use_ssl: uri.scheme == "https",\n'
+		//if (req.insecure) {
+		//prelude += "require 'openssl'\n"
+		//ruby += '  verify_mode: OpenSSL::SSL::VERIFY_NONE,\n'
+		//}
+		//ruby += '}\n'
+
+    if (httpMethods[req.method]) {
+      if (typeof form !== 'undefined') {
+        crystal += 'response = client.' + httpMethods[req.method] + '(uri.request_target, headers: headers, form: form)\n';
+      } else if (typeof body !== 'undefined') {
+        crystal += 'response = client.' + httpMethods[req.method] + '(uri.request_target, headers: headers, body: body)\n';
+      } else {
+        crystal += 'response = client.' + httpMethods[req.method] + '(uri.request_target, headers: headers)\n';
+      }
+		} else {
+			crystal += '# http/client does not support the method。available methods: delete,get,head,options,patch,post,put'
 		}
 
-		if (req.data.files && req.data.files.length > 0) {
-			if (!req.data.ascii) {
-				ruby += 'request.body = ""\n';
-			}
-
-			for (var i = 0; i < req.data.files.length; i++) {
-				ruby += 'request.body << File.read("'+rubyEsc(req.data.files[i])+'").delete("\\r\\n")\n';
-			}
-		}
-
-		ruby += '\n'
-		ruby += 'req_options = {\n'
-		ruby += '  use_ssl: uri.scheme == "https",\n'
-		if (req.insecure) {
-		prelude += "require 'openssl'\n"
-		ruby += '  verify_mode: OpenSSL::SSL::VERIFY_NONE,\n'
-		}
-		ruby += '}\n'
-
-		ruby += '\n'
-		ruby += 'response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|\n'
-		ruby += '  http.request(request)\n'
-		ruby += 'end\n'
-
-		return prelude + "\n" + ruby + coda;
+		return prelude + "\n" + crystal + coda;
 	}
 
 	// extractRelevantPieces returns an object with relevant pieces
 	// extracted from cmd, the parsed command. This accounts for
 	// multiple flags that do the same thing and return structured
-	// data that makes it easy to spit out Go code.
+	// data that makes it easy to spit out Crystal code.
 	function extractRelevantPieces(cmd) {
 		var relevant = {
 			url: "",
@@ -278,7 +265,7 @@ export default function curlToRuby(curl) {
 		});
 	}
 
-	function rubyEsc(s) {
+	function crystalEsc(s) {
 		return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 	}
 
