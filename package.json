@@ -1,8 +1,8 @@
 {
-  "name": "curl-to-ruby",
+  "name": "curl-to-crystal",
   "version": "1.0.0",
   "private": true,
-  "description": "curl-to-ruby ============",
+  "description": "curl-to-crystal ============",
   "scripts": {
     "watch": "webpack --watch --colors --progress --display-error-details",
     "compile": "webpack --no-colors -p --display-error-details",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jhawthorn/curl-to-ruby.git"
+    "url": "git+https://github.com/Kanezoh/curl-to-crystal.git"
   },
-  "author": "John Hawthorn",
+  "author": "Shunya Kaneko",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jhawthorn/curl-to-ruby/issues"
+    "url": "https://github.com/Kanezoh/curl-to-crystal/issues"
   },
-  "homepage": "https://github.com/jhawthorn/curl-to-ruby#readme",
+  "homepage": "https://github.com/Kanezoh/curl-to-crystal#readme",
   "dependencies": {
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
