@@ -4,7 +4,7 @@ require 'execjs'
 require 'webrick'
 require 'pry'
 
-class TestCurlToGo < Minitest::Test
+class TestCurlToCrytal < Minitest::Test
   JS_CONTEXT = ExecJS.compile(File.read("resources/js/curl-to-crystal.js"))
 
   def test_simple_get
@@ -106,7 +106,7 @@ class TestCurlToGo < Minitest::Test
 
   def capture_http
     server = WEBrick::HTTPServer.new(
-      Port: 80,
+      Port: 3000,
       Logger: WEBrick::Log.new("/dev/null"),
       AccessLog: []
     )
@@ -138,6 +138,8 @@ class TestCurlToGo < Minitest::Test
   end
 
   def crystal_eval(crystal)
+    # use port 3000 for test
+    crystal.gsub!("HTTP::Client.new(uri.host.not_nil!)", "HTTP::Client.new(uri.host.not_nil!, port: 3000)" )
     `crystal eval '#{crystal}'`
   end
 end
