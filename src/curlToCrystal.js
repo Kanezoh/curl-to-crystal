@@ -89,7 +89,7 @@ export default function curlToCrystal(curl) {
 			headers[toTitleCase(name)] = value;
 		}
 
-		delete headers["Accept-Encoding"];
+    delete headers["Accept-Encoding"];
 
     var crystal = "";
     crystal += 'headers = HTTP::Headers.new\n'
@@ -104,7 +104,11 @@ export default function curlToCrystal(curl) {
 		// set headers
 		for (var name in headers) {
 			crystal += 'headers["'+crystalEsc(name)+'"] = "'+crystalEsc(headers[name])+'"\n';
-		}
+    }
+
+    if ((!(Object.keys(headers).includes('Content-Type'))) && req.method === "POST") {
+      crystal += 'headers["Content-type"] = '+'"application/x-www-form-urlencoded"\n';
+    }
 
 		function isJson(json) {
 			try {

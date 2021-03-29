@@ -1,33 +1,36 @@
-#name: Test
-#
-#on:
-#  push:
-#    branches:
-#    - main
-#  pull_request:
-#    branches:
-#    - main
-#
-#jobs:
-#  test:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v1
-#    - name: Set up Ruby 2.6
-#      uses: actions/setup-ruby@v1
-#      with:
-#        ruby-version: 2.6.x
-#    - name: Set up Node.js 8.x
-#      uses: actions/setup-node@v1
-#      with:
-#        node-version: 8.x
-#    - name: Install dependencies
-#      run: |
-#        gem install bundler
-#        bundle install --jobs 4 --retry 3
-#        yarn
-#    - name: Build and run tests
-#      run: |
-#        yarn run compile
-#        bundle exec ruby test.rb
-#
+name: Test
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - name: Set up Node.js 8.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8.x
+    - name: Set up Crystal
+      run:
+        curl -fsSL https://crystal-lang.org/install.sh | sudo bash
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+        yarn
+    - name: Build and run tests
+      run: |
+        yarn run compile
+        bundle exec ruby test.rb
+

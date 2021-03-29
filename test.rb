@@ -2,9 +2,10 @@ require 'minitest'
 require 'minitest/autorun'
 require 'execjs'
 require 'webrick'
+require 'pry'
 
 class TestCurlToGo < Minitest::Test
-  JS_CONTEXT = ExecJS.compile(File.read("resources/js/curl-to-ruby.js"))
+  JS_CONTEXT = ExecJS.compile(File.read("resources/js/curl-to-crystal.js"))
 
   def test_simple_get
     assert_curl_eq "/"
@@ -45,7 +46,7 @@ class TestCurlToGo < Minitest::Test
   end
 
   def test_query_string
-    assert_curl_eq "/curl-to-ruby/?foo=bar", "-d @README.md"
+    assert_curl_eq "/curl-to-crystal/?foo=bar", "-d @README.md"
   end
 
   private
@@ -55,25 +56,24 @@ class TestCurlToGo < Minitest::Test
       system "curl -s -o /dev/null #{url}#{path} #{curl_args}"
     }
 
-    ruby_req = normalize_request capture_http { |url|
-      ruby = curl_to_ruby("curl #{url}#{path} #{curl_args}")
-      eval(ruby)
+    crystal_req = normalize_request capture_http { |url|
+      crystal = curl_to_crystal("curl #{url}#{path} #{curl_args}")
+      crystal_eval(crystal)
     }
-
-    assert_equal curl_req.verb, ruby_req.verb
-    assert_equal curl_req.path, ruby_req.path
+    assert_equal curl_req.verb, crystal_req.verb
+    assert_equal curl_req.path, crystal_req.path
     if curl_req.body.nil?
-      assert_nil ruby_req.body
+      assert_nil crystal_req.body
     else
-      assert_equal curl_req.body, ruby_req.body
+      assert_equal curl_req.body, crystal_req.body
     end
-    assert_equal curl_req.headers, ruby_req.headers
+    assert_equal curl_req.headers, crystal_req.headers
   end
 
   Request = Struct.new(:verb, :path, :headers, :body)
 
-  def curl_to_ruby(cmd)
-    JS_CONTEXT.call("curlToRuby.default", cmd)
+  def curl_to_crystal(cmd)
+    JS_CONTEXT.call("curlToCrystal.default", cmd)
   end
 
   def normalize_request(original)
@@ -82,6 +82,7 @@ class TestCurlToGo < Minitest::Test
     headers.delete("user-agent")
     headers.delete("host")
     headers.delete("expect")
+    headers["accept"] = ["*/*"] if headers["accept"].empty? # curl set this as default, but crystal's http/client doesn't do so.
 
     if original.body
       body = original.body
@@ -105,7 +106,7 @@ class TestCurlToGo < Minitest::Test
 
   def capture_http
     server = WEBrick::HTTPServer.new(
-      Port: 0,
+      Port: 80,
       Logger: WEBrick::Log.new("/dev/null"),
       AccessLog: []
     )
@@ -134,5 +135,9 @@ class TestCurlToGo < Minitest::Test
 
     thread.join
     thread.value
+  end
+
+  def crystal_eval(crystal)
+    `crystal eval '#{crystal}'`
   end
 end
