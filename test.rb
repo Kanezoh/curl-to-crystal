@@ -82,6 +82,7 @@ class TestCurlToCrytal < Minitest::Test
     headers.delete("user-agent")
     headers.delete("host")
     headers.delete("expect")
+    headers.delete("connection")
     headers["accept"] = ["*/*"] if headers["accept"].empty? # curl set this as default, but crystal's http/client doesn't do so.
 
     if original.body

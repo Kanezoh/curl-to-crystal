@@ -71,8 +71,7 @@ export default function curlToCrystal(curl) {
 	function renderSimple(req) {
 		var crystal = "";
 		crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
-    crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
-		crystal += 'response = client.get(uri.request_target)\n';
+    crystal += 'response = HTTP::Client.get(uri)\n'
 
 		return prelude + "\n" + crystal + coda;
 	}
