@@ -3,7 +3,7 @@
 
 	A simple utility to convert curl commands into crystal code.
 
-  Forked from curl-to-ruby by Hawthorn
+  Based on curl-to-ruby by Hawthorn
   https://github.com/jhawthorn/curl-to-ruby
 
 	Based on curl-to-go by Matt Holt
@@ -129,15 +129,16 @@ export default function curlToCrystal(curl) {
 			}
     }
 
-		//if (req.data.files && req.data.files.length > 0) {
-		//	if (!req.data.ascii) {
-		//		ruby += 'request.body = ""\n';
-		//	}
-//
-		//	for (var i = 0; i < req.data.files.length; i++) {
-		//		ruby += 'request.body << File.read("'+rubyEsc(req.data.files[i])+'").delete("\\r\\n")\n';
-		//	}
-		//}
+		if (req.data.files && req.data.files.length > 0) {
+			if (!req.data.ascii) {
+        crystal += 'body = ""\n';
+			}
+
+			for (var i = 0; i < req.data.files.length; i++) {
+				crystal += 'body += File.read("'+crystalEsc(req.data.files[i])+'").delete("\\r\\n")\n';
+      }
+      body = true
+		}
 
 		crystal += '\n'
 		//ruby += 'req_options = {\n'
