@@ -1,0 +1,19 @@
+name: curl-to
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of curl-to
+
+dependencies:
+  duktape:
+    github: jessedoyle/duktape.cr
+    version: ~> 1.0.0
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
