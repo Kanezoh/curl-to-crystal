@@ -10,15 +10,13 @@ JS_CONTEXT = Duktape::Runtime.new do |sbx|
   JS
 end
 
-# server thread
-spawn do
+spawn(name: "server thread") do
   server = HTTP::Server.new([TestHandler.new]){}
   puts "Listening on http://127.0.0.1:4000"
   server.listen(4000)
 end
 
-# test thread
-spawn do
+spawn(name: "test thread") do
   sleep 3
   assert_curl_eq "/"
   assert_curl_eq "/foo.txt"
