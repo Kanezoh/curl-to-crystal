@@ -10,6 +10,8 @@ JS_CONTEXT = Duktape::Runtime.new do |sbx|
   JS
 end
 
+ch = Channel(Nil).new
+
 spawn(name: "server thread") do
   server = HTTP::Server.new([TestHandler.new]){}
   puts "Listening on http://127.0.0.1:4000"
@@ -17,7 +19,6 @@ spawn(name: "server thread") do
 end
 
 spawn(name: "test thread") do
-  sleep 3
   assert_curl_eq "/"
   assert_curl_eq "/foo.txt"
   assert_curl_eq "/", "-X POST -d 'foo'"
@@ -36,8 +37,10 @@ spawn(name: "test thread") do
   assert_curl_eq "/", "-d foo=bar"
   assert_curl_eq "/", "-d @README.md"
   assert_curl_eq "/curl-to-crystal/?foo=bar", "-d @README.md"
+  ch.send(nil)
 end
-sleep 50
+
+ch.receive
 
 def assert_curl_eq(path, curl_args="")
   system "curl -s -o /dev/null http://127.0.0.1:4000#{path} #{curl_args}"
