@@ -138,7 +138,6 @@ class TestCurlToCrytal < Minitest::Test
   end
 
   def crystal_eval(crystal)
-    # use port 3000 for test
     `crystal eval '#{crystal}'`
   end
 end
