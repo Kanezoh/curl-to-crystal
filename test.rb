@@ -55,7 +55,6 @@ class TestCurlToCrytal < Minitest::Test
     curl_req = normalize_request capture_http { |url|
       system "curl -s -o /dev/null #{url}#{path} #{curl_args}"
     }
-    puts curl_req
     crystal_req = normalize_request capture_http { |url|
       crystal = curl_to_crystal("curl #{url}#{path} #{curl_args}")
       crystal_eval(crystal)
