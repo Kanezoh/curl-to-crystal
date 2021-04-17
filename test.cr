@@ -45,7 +45,6 @@ ch.receive
 def assert_curl_eq(path, curl_args="")
   system "curl -s -o /dev/null http://127.0.0.1:4000#{path} #{curl_args}"
   crystal_code = curl_to_crystal("curl http://127.0.0.1:4000#{path} #{curl_args}").to_s
-  crystal_code= crystal_code.gsub("HTTP::Client.new(uri.host.not_nil!)", "HTTP::Client.new(uri.host.not_nil!, port: 4000)" )
   system "crystal eval '#{crystal_code}'"
   curl_req = REQUESTS.shift
   crystal_req = REQUESTS.shift
