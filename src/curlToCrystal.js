@@ -275,7 +275,6 @@ export default function curlToCrystal(curl) {
   }
   
   function is_port_designated(url) {
-    console.log(!!(req.url.replace("http:", "").match(/:\d+/)))
     return !!(req.url.replace("http:", "").match(/:\d+/))
   }
 
@@ -290,6 +289,6 @@ export default function curlToCrystal(curl) {
       !req.data.files &&
       !req.basicauth &&
       !req.insecure &&
-      !is_port_designated;
+      !is_port_designated(req.url);
 	}
 }
