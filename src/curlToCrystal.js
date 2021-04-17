@@ -70,7 +70,7 @@ export default function curlToCrystal(curl) {
 	// renderSimple renders a simple HTTP request using net/http convenience methods
 	function renderSimple(req) {
 		var crystal = "";
-		crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
+    crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
     crystal += 'response = HTTP::Client.get(uri)\n'
 
 		return prelude + "\n" + crystal + coda;
@@ -92,8 +92,13 @@ export default function curlToCrystal(curl) {
 
     var crystal = "";
     crystal += 'headers = HTTP::Headers.new\n'
-		crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
-    crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
+    crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
+    if (is_port_designated(req.url)) {
+      let port = req.url.replace("http:", "").match(/:\d+/)[0].replace(":", "")
+      crystal += `client = HTTP::Client.new(uri.host.not_nil!, port: ${port})\n`
+    } else {
+      crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
+    }
 
 		// set basic auth
 		if (req.basicauth) {
@@ -267,18 +272,24 @@ export default function curlToCrystal(curl) {
 		return str.replace(/\w*/g, function(txt) {
 			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
 		});
-	}
+  }
+  
+  function is_port_designated(url) {
+    console.log(!!(req.url.replace("http:", "").match(/:\d+/)))
+    return !!(req.url.replace("http:", "").match(/:\d+/))
+  }
 
 	function crystalEsc(s) {
 		return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 	}
 
 	function isSimple() {
-		return req.headers.length == 0 && 
-			req.method == "GET" && 
-			!req.data.ascii && 
-			!req.data.files && 
-			!req.basicauth &&
-			!req.insecure;
+    return req.headers.length == 0 &&
+      req.method == "GET" &&
+      !req.data.ascii &&
+      !req.data.files &&
+      !req.basicauth &&
+      !req.insecure &&
+      !is_port_designated;
 	}
 }
