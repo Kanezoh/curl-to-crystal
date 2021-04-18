@@ -1,5 +1,0 @@
-source 'https://rubygems.org'
-gem 'execjs'
-gem 'execjs-fastnode'
-gem 'minitest'
-gem 'pry'

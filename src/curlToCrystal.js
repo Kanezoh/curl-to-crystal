@@ -10,7 +10,7 @@
 	https://github.com/mholt/curl-to-go
 */
 
-import queryString from 'query-string';
+//import queryString from 'query-string';
 import parseCommand from "./parseCommand";
 
 export default function curlToCrystal(curl) {
