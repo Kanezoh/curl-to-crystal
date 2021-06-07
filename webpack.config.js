@@ -10,12 +10,12 @@ module.exports = {
   },
 
   output: {
-    path: path.join(__dirname, "docs/assets"),
+    path: path.join(__dirname, "public/assets"),
     filename: "[name].js"
   },
 
   devServer: {
-    contentBase: path.resolve(__dirname, "docs"),
+    contentBase: path.resolve(__dirname, "public"),
     publicPath: '/assets/',
   },
 

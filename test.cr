@@ -4,7 +4,7 @@ require "duktape/runtime"
 
 REQUESTS = [] of Request
 JS_CONTEXT = Duktape::Runtime.new do |sbx|
-  js = File.read("docs/assets/curl-to-crystal.js")
+  js = File.read("public/assets/curl-to-crystal.js")
   sbx.eval! <<-JS
     #{js}
   JS
