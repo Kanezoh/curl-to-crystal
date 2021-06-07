@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>curl-to-crystal: Convert curl commands to crystal's http/client</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="resources/css/color-brewer.css">
+    <link rel="stylesheet" href="resources/css/common.css">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-193321351-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-193321351-1');
+    </script>
+  </head>
+  <body>
+
+    <header>
+      <h1>curl-to-crystal</h1>
+      <h2>Instantly convert <a href="http://curl.haxx.se/">curl</a> commands to <a href="https://www.crystal-lang.org/">crystal</a>'s <a href="https://crystal-lang.org/api/1.0.0/HTTP.html">http/client</a></h2>
+      <p>
+        This tool turns a curl command into crystal (1.0.0) code using <code>http/client</code>. Currently, it knows the following options: <code>-d</code>/<code>--data</code>, <code>-H</code>/<code>--header</code>, <code>-I</code>/<code>--head</code>, <code>-u</code>/<code>--user</code>, <code>-k</code>/<code>--insecure</code>, <code>--url</code>, and <code>-X</code>/<code>--request</code>.
+      </p>
+      <p>
+        There's probably bugs; please <a href="https://github.com/Kanezoh/curl-to-crystal">contribute on GitHub</a>. Based on <a href="https://mholt.github.io/curl-to-go">curl-to-go</a>, also based on <a href="https://github.com/jhawthorn/curl-to-ruby">curl-to-ruby</a>
+      </p>
+
+      <p class="examples">
+        <a href="javascript: useExample('example1')">Simple</a> &middot;
+        <a href="javascript: useExample('example2')">Basic Auth</a> &middot;
+        <a href="javascript: useExample('example3')">JSON</a> &middot;
+        <a href="javascript: useExample('example4')">Complex JSON</a> &middot;
+        <a href="javascript: useExample('example5')">Form Data</a>
+      </p>
+
+    </header>
+    <main>
+<script id="example1" language="text/x-shellscript">curl echoip.com</script>
+<script id="example2" language="text/x-shellscript">
+curl https://api.example.com/surprise \
+     -u banana:coconuts \
+     -d "sample data"
+</script>
+<script id="example3" language="text/x-shellscript">
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer b7d03a6947b217efb6f3ec3bd3504582" -d '{"type":"A","name":"www","data":"162.10.66.0","priority":null,"port":null,"weight":null}' "https://api.digitalocean.com/v2/domains/example.com/records"
+</script>
+<script id="example4" language="text/x-shellscript">
+     curl -u "demo:" -X POST -H "Content-Type: application/json" -d '{"array": [1,2,3], "object": {"foo": "bar", "nested": {"baz": true}}}' https://example.com/
+</script>
+<script id="example5" language="text/x-shellscript">
+curl -X POST https://api.easypost.com/v2/shipments \
+     -u API_KEY: \
+     -d 'shipment[to_address][id]=adr_HrBKVA85' \
+     -d 'shipment[from_address][id]=adr_VtuTOj7o' \
+     -d 'shipment[parcel][id]=prcl_WDv2VzHp' \
+     -d 'shipment[is_return]=true' \
+     -d 'shipment[customs_info][id]=cstinfo_bl5sE20Y'
+</script>
+
+      <textarea id="input" rows="4" placeholder="Paste curl here"></textarea>
+      <div id="output"></div>
+    </main>
+    <footer>
+      <p>
+        Protip™: Both chrome and firefox allow <a href="https://daniel.haxx.se/blog/2015/11/23/copy-as-curl/">copying any request as curl</a>.
+      </p>
+    </footer>
+    <script src="resources/js/default.js"></script>
+  </body>
+</html>
