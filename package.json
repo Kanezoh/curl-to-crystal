@@ -26,7 +26,8 @@
     "highlight.js": "^9.4.0",
     "query-string": "^6.8.2",
     "shell-quote": "^1.6.0",
-    "webpack": "^4.39.2"
+    "webpack": "^4.39.2",
+    "webpack-dev-server": "^3.11.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",
