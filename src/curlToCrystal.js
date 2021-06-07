@@ -93,13 +93,17 @@ export default function curlToCrystal(curl) {
     var crystal = "";
     crystal += 'headers = HTTP::Headers.new\n'
     crystal += 'uri = URI.parse("' + crystalEsc(req.url) + '")\n';
+    crystal += 'client = HTTP::Client.new(uri.host.not_nil!'
+    let new_option = ""
     if (is_port_designated(req.url)) {
       let port = req.url.replace("http:", "").match(/:\d+/)[0].replace(":", "")
-      crystal += `client = HTTP::Client.new(uri.host.not_nil!, port: ${port})\n`
-    } else {
-      crystal += 'client = HTTP::Client.new(uri.host.not_nil!)\n'
+      new_option += `, port: ${port}`
     }
-
+    if (req.url.match("https")) {
+      new_option += ', tls: true'
+    }
+    new_option += ")\n"
+    crystal += new_option
 		// set basic auth
 		if (req.basicauth) {
 			crystal += 'client.basic_auth("'+crystalEsc(req.basicauth.user)+'", "'+crystalEsc(req.basicauth.pass)+'")\n';
